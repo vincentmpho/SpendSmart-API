@@ -11,7 +11,7 @@ namespace SpendSmart_API.Data
         {
         }
 
-        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Profile> Profiles { get; set; } 
         public DbSet<Income> Incomes { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<TodoTransaction> TodoTransactions { get; set; }
