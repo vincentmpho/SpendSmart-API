@@ -28,22 +28,44 @@ namespace SpendSmart_API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while adding income." });
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = "An error occurred while adding income.", error = ex.Message });
             }
         }
 
-            [HttpGet("{month}")]
+        [HttpGet("{month}")]
         public async Task<IActionResult> GetIncomesByMonth(string month)
         {
-            var incomes = await _incomeService.GetIncomesByMonthAsync(month);
-            return Ok(incomes);
+            try
+            {
+                var incomes = await _incomeService.GetIncomesByMonthAsync(month);
+                return Ok(incomes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = $"An error occurred while retrieving incomes for month {month}.", error = ex.Message });
+            }
         }
 
         [HttpPost("bulk")]
         public async Task<IActionResult> SaveAllIncomes([FromBody] List<IncomeDto> incomes)
         {
-            await _incomeService.SaveAllIncomesAsync(incomes);
-            return Ok(new { message = "All incomes saved successfully" });
+            if (incomes == null || !incomes.Any())
+            {
+                return BadRequest("Incomes cannot be null or empty.");
+            }
+
+            try
+            {
+                await _incomeService.SaveAllIncomesAsync(incomes);
+                return Ok(new { message = "All incomes saved successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = "An error occurred while saving bulk incomes.", error = ex.Message });
+            }
         }
     }
 }

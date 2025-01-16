@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SpendSmart_API.Data;
 using SpendSmart_API.Models;
 
@@ -24,23 +23,39 @@ namespace SpendSmart_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Profiles.Add(profile);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Profiles.Add(profile);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProfileById), new { id = profile.Id }, profile);
+                return CreatedAtAction(nameof(GetProfileById), new { id = profile.Id }, profile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = "An error occurred while adding the profile.", error = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProfileById(int id)
         {
-            var profile = await _context.Profiles.FindAsync(id);
-
-            if (profile == null)
+            try
             {
-                return NotFound();
-            }
+                var profile = await _context.Profiles.FindAsync(id);
 
-            return Ok(profile);
+                if (profile == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(profile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = $"An error occurred while retrieving profile with ID {id}.", error = ex.Message });
+            }
         }
     }
 }

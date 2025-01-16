@@ -17,20 +17,26 @@ namespace SpendSmart_API.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddTransaction([FromBody] Transaction transaction) 
+        public async Task<IActionResult> AddTransaction([FromBody] Transaction transaction)
         {
             if (transaction == null)
             {
                 return BadRequest("Transaction data is null");
             }
 
-            // Add transaction to the database
-            _context.Transactions.Add(transaction);
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Add transaction to the database
+                _context.Transactions.Add(transaction);
+                await _context.SaveChangesAsync();
 
-            return Ok(transaction);
+                return Ok(transaction);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
-
 
         [HttpGet("{month}")]
         public async Task<IActionResult> GetTransactionsByMonth(string month)
@@ -40,12 +46,11 @@ namespace SpendSmart_API.Controllers
                 return BadRequest("Month is required");
             }
 
-
             try
             {
                 var transactions = await _context.Transactions
-                .Where(t => t.Month == month)
-                .ToListAsync();
+                    .Where(t => t.Month == month)
+                    .ToListAsync();
 
                 if (transactions == null || !transactions.Any())
                 {
@@ -59,6 +64,5 @@ namespace SpendSmart_API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
     }
 }
