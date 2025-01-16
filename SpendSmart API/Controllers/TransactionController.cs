@@ -32,7 +32,6 @@ namespace SpendSmart_API.Controllers
         }
 
 
-
         [HttpGet("{month}")]
         public async Task<IActionResult> GetTransactionsByMonth(string month)
         {
@@ -42,27 +41,16 @@ namespace SpendSmart_API.Controllers
             }
 
 
-
-
-
             try
             {
                 var transactions = await _context.Transactions
                 .Where(t => t.Month == month)
                 .ToListAsync();
 
-
-
-
-
                 if (transactions == null || !transactions.Any())
                 {
                     return NotFound($"No transactions found for the month: {month}");
                 }
-
-
-
-
 
                 return Ok(transactions);
             }
@@ -71,5 +59,6 @@ namespace SpendSmart_API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
     }
 }
