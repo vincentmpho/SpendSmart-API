@@ -7,5 +7,4 @@
         public string ExpenseType { get; set; } 
         public decimal ExpenseAmount { get; set; }
     }
-
 }
